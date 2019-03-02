@@ -50,7 +50,7 @@ namespace LxGreg.Controllers
         }
 
         // GET: Orders/Create
-        public IActionResult Create()
+        public IActionResult Create(int stockid)
         {
             ViewData["OperaterId"] = new SelectList(_context.managers, "Id", nameof(Manager.Name));
             ViewData["TakerId"] = new SelectList(_context.managers, "Id", nameof(Manager.Name));
@@ -105,7 +105,7 @@ namespace LxGreg.Controllers
                 }
                 _context.Add(order);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index),"Stocks");
             }
             ViewData["OperaterId"] = new SelectList(_context.managers, "Id", "Id", order.OperaterId);
             ViewData["TakerId"] = new SelectList(_context.managers, "Id", "Id", order.TakerId);

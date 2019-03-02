@@ -1,13 +1,13 @@
 ﻿@model IEnumerable<LxGreg.Models.Stock>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "库存管理";
 }
 
-<h2>Index</h2>
+    <h2>库存管理</h2>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-controller="Orders" asp-action="Create" class="btn btn-success">新增入库</a>
 </p>
 <table class="table">
     <thead>
@@ -21,6 +21,13 @@
             <th>
                 @Html.DisplayNameFor(model => model.asset.ItemNumber)
             </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.asset.ItemName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.asset.Model)
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.CurrentQuntity)
             </th>
@@ -28,7 +35,7 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.OrderBy(c=>c.storeId).OrderBy(c=>c.assetId)) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.store.StoreName)
@@ -40,12 +47,17 @@
                 @Html.DisplayFor(modelItem => item.asset.ItemNumber)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.asset.ItemName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.asset.Model)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.CurrentQuntity)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.id">Delete</a>
+                <a asp-controller="Orders" asp-action="Create" class="btn btn-success" asp-route-id="@item.id">入库</a>
+                <a asp-controller="Orders" asp-action="Create" class="btn btn-success" asp-route-id="@item.id">领用</a>
             </td>
         </tr>
 }
