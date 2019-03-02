@@ -9,7 +9,7 @@ namespace LxGreg.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Asset",
+                name: "assets",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -22,11 +22,11 @@ namespace LxGreg.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Asset", x => x.Id);
+                    table.PrimaryKey("PK_assets", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Manager",
+                name: "managers",
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
@@ -34,11 +34,11 @@ namespace LxGreg.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Manager", x => x.Id);
+                    table.PrimaryKey("PK_managers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Store",
+                name: "stores",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -47,11 +47,11 @@ namespace LxGreg.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Store", x => x.Id);
+                    table.PrimaryKey("PK_stores", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Unit",
+                name: "units",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -60,7 +60,7 @@ namespace LxGreg.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Unit", x => x.Id);
+                    table.PrimaryKey("PK_units", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -69,46 +69,45 @@ namespace LxGreg.Migrations
                 {
                     Id = table.Column<string>(nullable: false),
                     OrderTime = table.Column<DateTime>(nullable: false),
-                    OperaterId = table.Column<string>(nullable: true),
                     storeId = table.Column<int>(nullable: false),
                     unitId = table.Column<int>(nullable: false),
                     assetId = table.Column<int>(nullable: false),
                     Quntity = table.Column<int>(nullable: false),
-                    TakerId1 = table.Column<string>(nullable: true),
-                    TakerId = table.Column<int>(nullable: false),
+                    TakerId = table.Column<string>(nullable: true),
+                    OperaterId = table.Column<string>(nullable: true),
                     Mark = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_orders", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_orders_Manager_OperaterId",
+                        name: "FK_orders_managers_OperaterId",
                         column: x => x.OperaterId,
-                        principalTable: "Manager",
+                        principalTable: "managers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_orders_Manager_TakerId1",
-                        column: x => x.TakerId1,
-                        principalTable: "Manager",
+                        name: "FK_orders_managers_TakerId",
+                        column: x => x.TakerId,
+                        principalTable: "managers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_orders_Asset_assetId",
+                        name: "FK_orders_assets_assetId",
                         column: x => x.assetId,
-                        principalTable: "Asset",
+                        principalTable: "assets",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_orders_Store_storeId",
+                        name: "FK_orders_stores_storeId",
                         column: x => x.storeId,
-                        principalTable: "Store",
+                        principalTable: "stores",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_orders_Unit_unitId",
+                        name: "FK_orders_units_unitId",
                         column: x => x.unitId,
-                        principalTable: "Unit",
+                        principalTable: "units",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -128,21 +127,21 @@ namespace LxGreg.Migrations
                 {
                     table.PrimaryKey("PK_stocks", x => x.id);
                     table.ForeignKey(
-                        name: "FK_stocks_Asset_assetId",
+                        name: "FK_stocks_assets_assetId",
                         column: x => x.assetId,
-                        principalTable: "Asset",
+                        principalTable: "assets",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_stocks_Store_storeId",
+                        name: "FK_stocks_stores_storeId",
                         column: x => x.storeId,
-                        principalTable: "Store",
+                        principalTable: "stores",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_stocks_Unit_unitId",
+                        name: "FK_stocks_units_unitId",
                         column: x => x.unitId,
-                        principalTable: "Unit",
+                        principalTable: "units",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -153,9 +152,9 @@ namespace LxGreg.Migrations
                 column: "OperaterId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_orders_TakerId1",
+                name: "IX_orders_TakerId",
                 table: "orders",
-                column: "TakerId1");
+                column: "TakerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_orders_assetId",
@@ -197,16 +196,16 @@ namespace LxGreg.Migrations
                 name: "stocks");
 
             migrationBuilder.DropTable(
-                name: "Manager");
+                name: "managers");
 
             migrationBuilder.DropTable(
-                name: "Asset");
+                name: "assets");
 
             migrationBuilder.DropTable(
-                name: "Store");
+                name: "stores");
 
             migrationBuilder.DropTable(
-                name: "Unit");
+                name: "units");
         }
     }
 }

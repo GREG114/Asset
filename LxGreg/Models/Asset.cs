@@ -59,9 +59,6 @@ namespace LxGreg.Models
         public string Id { get; set; }
         [Display(Name = "下单时间")]
         public DateTime OrderTime { get; set; }
-        public Manager Operater { get; set; }
-        [Display(Name = "操作人ID")]
-        public string OperaterId { get; set; }
         public Store store { get; set; }
         public int storeId { get; set; }
         public Unit unit { get; set; }
@@ -71,7 +68,10 @@ namespace LxGreg.Models
         [Display(Name = "数量")]
         public int Quntity { get; set; }
         public Manager Taker { get; set; }
-        public int TakerId { get; set; }
+        public string TakerId { get; set; }
+        public Manager Operater { get; set; }
+        [Display(Name = "操作人ID")]
+        public string OperaterId { get; set; }
         [Display(Name = "备注")]
         public string Mark { get; set; }
 

@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LxGreg.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20190302112956_create")]
+    [Migration("20190302120930_create")]
     partial class create
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,7 +39,7 @@ namespace LxGreg.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Asset");
+                    b.ToTable("assets");
                 });
 
             modelBuilder.Entity("LxGreg.Models.Manager", b =>
@@ -51,7 +51,7 @@ namespace LxGreg.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Manager");
+                    b.ToTable("managers");
                 });
 
             modelBuilder.Entity("LxGreg.Models.Order", b =>
@@ -67,9 +67,7 @@ namespace LxGreg.Migrations
 
                     b.Property<int>("Quntity");
 
-                    b.Property<int>("TakerId");
-
-                    b.Property<string>("TakerId1");
+                    b.Property<string>("TakerId");
 
                     b.Property<int>("assetId");
 
@@ -81,7 +79,7 @@ namespace LxGreg.Migrations
 
                     b.HasIndex("OperaterId");
 
-                    b.HasIndex("TakerId1");
+                    b.HasIndex("TakerId");
 
                     b.HasIndex("assetId");
 
@@ -127,7 +125,7 @@ namespace LxGreg.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Store");
+                    b.ToTable("stores");
                 });
 
             modelBuilder.Entity("LxGreg.Models.Unit", b =>
@@ -140,7 +138,7 @@ namespace LxGreg.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Unit");
+                    b.ToTable("units");
                 });
 
             modelBuilder.Entity("LxGreg.Models.Order", b =>
@@ -151,7 +149,7 @@ namespace LxGreg.Migrations
 
                     b.HasOne("LxGreg.Models.Manager", "Taker")
                         .WithMany()
-                        .HasForeignKey("TakerId1");
+                        .HasForeignKey("TakerId");
 
                     b.HasOne("LxGreg.Models.Asset", "asset")
                         .WithMany("orders")

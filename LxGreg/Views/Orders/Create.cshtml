@@ -1,0 +1,63 @@
+﻿@model LxGreg.Models.Order
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Create</h2>
+
+<h4>Order</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="OrderTime" class="control-label"></label>
+                <input asp-for="OrderTime" class="form-control" />
+                <span asp-validation-for="OrderTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="OperaterId" class="control-label"></label>
+                <select asp-for="OperaterId" class ="form-control" asp-items="ViewBag.OperaterId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="storeId" class="control-label"></label>
+                <select asp-for="storeId" class ="form-control" asp-items="ViewBag.storeId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="unitId" class="control-label"></label>
+                <select asp-for="unitId" class ="form-control" asp-items="ViewBag.unitId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="assetId" class="control-label"></label>
+                <select asp-for="assetId" class ="form-control" asp-items="ViewBag.assetId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Quntity" class="control-label"></label>
+                <input asp-for="Quntity" class="form-control" />
+                <span asp-validation-for="Quntity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TakerId" class="control-label"></label>
+                <select asp-for="TakerId" class ="form-control" asp-items="ViewBag.TakerId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Mark" class="control-label"></label>
+                <input asp-for="Mark" class="form-control" />
+                <span asp-validation-for="Mark" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
