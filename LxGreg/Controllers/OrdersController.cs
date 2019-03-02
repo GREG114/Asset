@@ -50,8 +50,15 @@ namespace LxGreg.Controllers
         }
 
         // GET: Orders/Create
-        public IActionResult Create(int stockid)
+        public IActionResult Create(int stockid,bool take)
         {
+           
+            ViewBag.take = take;
+            var stock = _context.stocks.Find(stockid);
+            if (stock != null)
+            {
+                ViewBag.stock = stock;
+            }
             ViewData["OperaterId"] = new SelectList(_context.managers, "Id", nameof(Manager.Name));
             ViewData["TakerId"] = new SelectList(_context.managers, "Id", nameof(Manager.Name));
             ViewData["assetId"] = new SelectList(_context.assets, "Id", nameof(Asset.ItemNumber));
@@ -65,7 +72,7 @@ namespace LxGreg.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,OperaterId,storeId,unitId,assetId,Quntity,TakerId,Mark")] Order order)
+        public async Task<IActionResult> Create([Bind("Id,OperaterId,storeId,unitId,assetId,Quntity,TakerId,Mark,take")] Order order)
         {
             if (ModelState.IsValid)
             {
@@ -75,11 +82,18 @@ namespace LxGreg.Controllers
                 {
                     var targetstock = stock.Include(c=>c.store).First();
                     
-                    if (order.Quntity<0&&targetstock.CurrentQuntity < -order.Quntity)
+                    if (targetstock.CurrentQuntity<order.Quntity&&order.take)
                     {
                         return Json($"库存不足，目标仓库：{targetstock.store.StoreName}，当前库存：{targetstock.CurrentQuntity}");
                     }
-                     targetstock.CurrentQuntity += order.Quntity;
+                    if (order.take)
+                    {
+                        targetstock.CurrentQuntity -= order.Quntity;
+                    }
+                    else
+                    {
+                        targetstock.CurrentQuntity += order.Quntity;
+                    }
                  
                    
                     _context.stocks.Update(targetstock);
@@ -87,7 +101,7 @@ namespace LxGreg.Controllers
                 }
                 else
                 {
-                    if (order.Quntity<0)
+                    if (order.take)
                     {
                         return Json($"仍未建立此库");
                     }

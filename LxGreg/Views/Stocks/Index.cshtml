@@ -56,8 +56,8 @@
                 @Html.DisplayFor(modelItem => item.CurrentQuntity)
             </td>
             <td>
-                <a asp-controller="Orders" asp-action="Create" class="btn btn-success" asp-route-id="@item.id">入库</a>
-                <a asp-controller="Orders" asp-action="Create" class="btn btn-success" asp-route-id="@item.id">领用</a>
+                <a asp-controller="Orders" asp-action="Create" class="btn btn-success" asp-route-stockid="@item.id" asp-route-take="false">入库</a>
+                <a asp-controller="Orders" asp-action="Create" class="btn btn-success" asp-route-stockid="@item.id" asp-route-take="true">领用</a>
             </td>
         </tr>
 }

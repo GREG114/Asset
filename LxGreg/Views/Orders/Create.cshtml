@@ -2,50 +2,84 @@
 
 @{
     ViewData["Title"] = "Create";
-}
-<script>
-     var quantity = document.getElementById("Quntity")
-    function take() {
-        var quantity = document.getElementById("Quntity")
-        var takeq = parseInt(quantity.value)
-        quantity.value = -takeq
-        document.getElementById("submit").click()
+    var stock = ViewBag.stock as LxGreg.Models.Stock;
+    int assetid = 0, unitid = 0, storeid = 0;
+    if (stock != null)
+    {
+        assetid = stock.assetId;
+        unitid = stock.unitId;
+        storeid = stock.storeId;
     }
-   
-</script>
-<h2>Create</h2>
+}
+    <script type="text/javascript">
+    function ch() {
+        var store = document.getElementById('store');
+        var unit = document.getElementById('unit');
+        var asset = document.getElementById('asset');
+        for(var i = 0; i < (store.options.length); i++) {
+            if (store.options[i].value == @storeid) {
+                store.options.selectedIndex = store.options[i].index
+                //      alert()
+            }
+        }
+        for (var i = 0; i < (asset.options.length); i++) {
+            if (asset.options[i].value == @assetid) {
+                asset.options.selectedIndex = asset.options[i].index
+                //      alert()
+            }
+        }
+        for (var i = 0; i < (unit.options.length); i++) {
+            if (unit.options[i].value == @unitid) {
+                unit.options.selectedIndex = unit.options[i].index
+                //      alert()
+            }
+        }
+    }
+    window.onload=ch
 
+    </script>
+<h2>Create</h2>
 <h4>Order</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-       <input type="text" asp-for="Id"/>
+            <input type="hidden" asp-for="Id" />
+            @if (ViewBag.take)
+            {
+
+                <input type="hidden" asp-for="take" checked="checked" />
+            }
+            else
+            {
+
+                <input type="hidden" asp-for="take" />
+            }
             <div class="form-group">
                 <label asp-for="OperaterId" class="control-label"></label>
-                <select asp-for="OperaterId" class ="form-control" asp-items="ViewBag.OperaterId"></select>                
+                <select asp-for="OperaterId" class="form-control" asp-items="ViewBag.OperaterId"></select>
             </div>
-            <div class="form-group">
+            <div class="form-group" >
                 <label asp-for="storeId" class="control-label"></label>
-                <select asp-for="storeId" class ="form-control" asp-items="ViewBag.storeId"></select>
+                <select asp-for="storeId" id="store" class="form-control" asp-items="ViewBag.storeId" ></select>
             </div>
             <div class="form-group">
                 <label asp-for="unitId" class="control-label"></label>
-                <select asp-for="unitId" class ="form-control" asp-items="ViewBag.unitId"></select>
+                <select asp-for="unitId" id="unit" class="form-control" asp-items="ViewBag.unitId"></select>
             </div>
             <div class="form-group">
                 <label asp-for="assetId" class="control-label"></label>
-                <select asp-for="assetId" class ="form-control" asp-items="ViewBag.assetId"></select>
+                <select asp-for="assetId" id="asset" class="form-control" asp-items="ViewBag.assetId"></select>
             </div>
             <div class="form-group">
-                <label asp-for="Quntity"  class="control-label"></label>
-                <input asp-for="Quntity" id="Quntity" class="form-control" />
+                <label asp-for="Quntity" class="control-label"></label>
+                <input asp-for="Quntity" id="Quntity" class="form-control" value="0" />
                 <span asp-validation-for="Quntity" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="TakerId" class="control-label"></label>
-                <select asp-for="TakerId" class ="form-control" asp-items="ViewBag.TakerId"></select>
+                <select asp-for="TakerId" class="form-control" asp-items="ViewBag.TakerId"></select>
             </div>
             <div class="form-group">
                 <label asp-for="Mark" class="control-label"></label>
@@ -53,8 +87,7 @@
                 <span asp-validation-for="Mark" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" id="submit" value="入库" class="btn btn-default" />
-                <input type="button" value="领用" class="btn btn-default" onclick="take()" />
+                <input type="submit" id="submit" value="提交" class="btn btn-default" />
             </div>
         </form>
     </div>

@@ -74,6 +74,7 @@ namespace LxGreg.Models
         public string OperaterId { get; set; }
         [Display(Name = "备注")]
         public string Mark { get; set; }
+        public bool take { get; set; }
 
     }
 }
