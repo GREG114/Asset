@@ -52,11 +52,11 @@ namespace LxGreg.Controllers
         // GET: Orders/Create
         public IActionResult Create()
         {
-            ViewData["OperaterId"] = new SelectList(_context.managers, "Id", "Id");
-            ViewData["TakerId"] = new SelectList(_context.managers, "Id", "Id");
-            ViewData["assetId"] = new SelectList(_context.assets, "Id", "Id");
-            ViewData["storeId"] = new SelectList(_context.stores, "Id", "Id");
-            ViewData["unitId"] = new SelectList(_context.units, "Id", "Id");
+            ViewData["OperaterId"] = new SelectList(_context.managers, "Id", nameof(Manager.Name));
+            ViewData["TakerId"] = new SelectList(_context.managers, "Id", nameof(Manager.Name));
+            ViewData["assetId"] = new SelectList(_context.assets, "Id", nameof(Asset.ItemNumber));
+            ViewData["storeId"] = new SelectList(_context.stores, "Id", nameof(Store.StoreName));
+            ViewData["unitId"] = new SelectList(_context.units, "Id", nameof(Unit.UnitName));
             return View();
         }
 
@@ -65,10 +65,44 @@ namespace LxGreg.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,OrderTime,OperaterId,storeId,unitId,assetId,Quntity,TakerId,Mark")] Order order)
+        public async Task<IActionResult> Create([Bind("Id,OperaterId,storeId,unitId,assetId,Quntity,TakerId,Mark")] Order order)
         {
             if (ModelState.IsValid)
             {
+                order.OrderTime = DateTime.Now;
+                var stock = _context.stocks.Where(c => c.storeId == order.storeId && c.assetId == order.assetId && c.unitId == order.unitId);
+                if (stock.Count() == 1)
+                {
+                    var targetstock = stock.Include(c=>c.store).First();
+                    
+                    if (order.Quntity<0&&targetstock.CurrentQuntity < -order.Quntity)
+                    {
+                        return Json($"库存不足，目标仓库：{targetstock.store.StoreName}，当前库存：{targetstock.CurrentQuntity}");
+                    }
+                     targetstock.CurrentQuntity += order.Quntity;
+                 
+                   
+                    _context.stocks.Update(targetstock);
+
+                }
+                else
+                {
+                    if (order.Quntity<0)
+                    {
+                        return Json($"仍未建立此库");
+                    }
+                    else
+                    {
+                        _context.stocks.Add(new Stock
+                        {
+                            assetId = order.assetId,
+                            storeId = order.storeId,
+                            unitId = order.unitId,
+                            CurrentQuntity = order.Quntity
+                        });
+                    }
+                  
+                }
                 _context.Add(order);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
