@@ -45,10 +45,22 @@ namespace LxGreg.Controllers.Asset
             return View(item);
         }
 
+        public string GetNewItemNumber(int storeid)
+        {
+            var haved = _context.items.Where(c=>c.storeId==storeid).OrderByDescending(c=>c.storeId);
+            if (haved.Count() > 0)
+            {
+                var shortnow = Convert.ToInt32(haved.First().ItemShortNumber) + 1;
+                return storeid+"."+shortnow.ToString().PadLeft(4, '0');
+            }
+            return storeid + "." + "0001";
+        }
+
         // GET: Items/Create
         public IActionResult Create()
         {
-            ViewData["storeId"] = new SelectList(_context.stores, "Id", "Id");
+            ViewData["storeId"] = new SelectList(_context.stores, "Id", nameof(Store.StoreName));
+
             return View();
         }
 
