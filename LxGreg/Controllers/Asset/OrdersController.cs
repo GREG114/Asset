@@ -16,7 +16,13 @@ namespace LxGreg.Controllers.Asset
 
         public OrdersController(AppDbContext context)
         {
+         
             _context = context;
+            if (_context.managers.Count() == 0)
+            {
+                _context.managers.Add(new Manager { Id = "liuchao", Name = "管理员" });
+                _context.SaveChanges();
+            }
         }
 
         // GET: Orders
@@ -49,12 +55,21 @@ namespace LxGreg.Controllers.Asset
         }
 
         // GET: Orders/Create
-        public IActionResult Create()
+        public IActionResult Create(int stockid, bool take)
         {
-            ViewData["OperaterId"] = new SelectList(_context.managers, "Id", "Id");
-            ViewData["TakerId"] = new SelectList(_context.managers, "Id", "Id");
+            ViewBag.take = take;
+            if (stockid != 0)
+            {
+                var stock = _context.stocks.Include(c => c.item).Where(c => c.id == stockid).First();
+                if (stock != null)
+                {
+                    ViewBag.stock = stock;
+                }
+            }
+            ViewData["OperaterId"] = new SelectList(_context.managers, "Id", nameof(Manager.Name));
+            ViewData["TakerId"] = new SelectList(_context.managers, "Id", nameof(Manager.Name));
             ViewData["itemItemNumber"] = new SelectList(_context.items, "ItemNumber", "ItemNumber");
-            ViewData["unitId"] = new SelectList(_context.units, "Id", "Id");
+            ViewData["unitId"] = new SelectList(_context.units, "Id",nameof(Unit.UnitName));
             return View();
         }
 
@@ -63,11 +78,48 @@ namespace LxGreg.Controllers.Asset
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,OrderTime,Quntity,Mark,take,unitId,itemItemNumber,TakerId,OperaterId")] Order order)
+        public async Task<IActionResult> Create([Bind("Id,Quntity,Mark,take,unitId,itemItemNumber,TakerId,OperaterId")] Order order)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(order);
+                order.OrderTime = DateTime.Now;
+                var stock = _context.stocks.Include(c=>c.item).Where(c => c.itemItemNumber == order.itemItemNumber&&c.unitId==order.unitId);
+                if (stock.Count() == 1)
+                {
+                    var targetstock = stock.First();
+                    if (targetstock.CurrentQuntity < order.Quntity && order.take)
+                    {
+                        return Json($"库存不足，目标仓库：{targetstock.item.store.StoreName}，当前库存：{targetstock.CurrentQuntity}");
+                    }
+                    if (order.take)
+                    {
+                        targetstock.CurrentQuntity -= order.Quntity;
+                    }
+                    else
+                    {
+                        targetstock.CurrentQuntity += order.Quntity;
+                    }
+
+
+                    _context.stocks.Update(targetstock);
+                }
+                else
+                {
+                    if (order.take)
+                    {
+                        return Json($"仍未建立此库");
+                    }
+                    else
+                    {
+                        _context.stocks.Add(new Stock
+                        {
+                            itemItemNumber = order.itemItemNumber,
+                            unitId = order.unitId,
+                            CurrentQuntity = order.Quntity
+                        });
+                    }
+                }
+                    _context.Add(order);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -77,7 +129,10 @@ namespace LxGreg.Controllers.Asset
             ViewData["unitId"] = new SelectList(_context.units, "Id", "Id", order.unitId);
             return View(order);
         }
-
+        public IActionResult GetAsset(string str)
+        {
+            return Json(_context.items.Where(c => c.ItemName.Contains(str) || c.ItemNumber.Contains(str) || c.Model.Contains(str)));
+        }
         // GET: Orders/Edit/5
         public async Task<IActionResult> Edit(string id)
         {

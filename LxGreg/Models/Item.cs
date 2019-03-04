@@ -49,6 +49,8 @@ namespace LxGreg.Models
         public int id { get; set; }    
         public Item item { get; set; }
         public string itemItemNumber { get; set; }
+        public Unit unit { get; set; }
+        public int unitId { get; set; }
         [Display(Name = "当前库存")]
         public int CurrentQuntity { get; set; }
     }

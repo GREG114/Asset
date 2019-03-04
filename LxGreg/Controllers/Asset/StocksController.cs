@@ -22,7 +22,7 @@ namespace LxGreg.Controllers.Asset
         // GET: Stocks
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.stocks.Include(s => s.item);
+            var appDbContext = _context.stocks.Include(s => s.item).Include(s=>s.item.store).Include(c=>c.unit);
             return View(await appDbContext.ToListAsync());
         }
 
@@ -48,6 +48,7 @@ namespace LxGreg.Controllers.Asset
         // GET: Stocks/Create
         public IActionResult Create()
         {
+            ViewData["unitId"] = new SelectList(_context.units, "Id", nameof(Unit.UnitName));
             ViewData["itemItemNumber"] = new SelectList(_context.items, "ItemNumber", "ItemNumber");
             return View();
         }
@@ -57,7 +58,7 @@ namespace LxGreg.Controllers.Asset
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("id,itemItemNumber,CurrentQuntity")] Stock stock)
+        public async Task<IActionResult> Create([Bind("id,itemItemNumber,CurrentQuntity,unitId")] Stock stock)
         {
             if (ModelState.IsValid)
             {
@@ -65,7 +66,6 @@ namespace LxGreg.Controllers.Asset
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["itemItemNumber"] = new SelectList(_context.items, "ItemNumber", "ItemNumber", stock.itemItemNumber);
             return View(stock);
         }
 

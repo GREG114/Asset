@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Create";
+
 }
 
 <h1>Create</h1>
@@ -10,13 +11,21 @@
         var obj = document.getElementById('store');
         var index=obj.selectedIndex;
         var se = obj.options[index].value;
-
+        $.ajax({
+            type: "get",
+            data: { storeid: se },
+            url: "/Items/GetNewItemNumber",
+            success: function (d) {
+             document.getElementById('itemno').value=d
+             document.getElementById('short').value=d.split(".")[1]
+            }
+        })
+   
         //document.getElementById('store').find("option:selected").val();
-        alert(se)
-    }
+       
+    }     window.onload=makeid
 </script>
 <h4>Item</h4>
-<input type="button" onclick="makeid()" value="test" />
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -39,12 +48,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="ItemShortNumber" class="control-label"></label>
-                <input asp-for="ItemShortNumber" class="form-control" />
+                <input asp-for="ItemShortNumber" id="short" class="form-control" readonly="readonly" />
                 <span asp-validation-for="ItemShortNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="ItemNumber" class="control-label"></label>
-                <input asp-for="ItemNumber" class="form-control" />
+                <input asp-for="ItemNumber" id="itemno" class="form-control" readonly="readonly" />
                 <span asp-validation-for="ItemNumber" class="text-danger"></span>
             </div>
             <div class="form-group">

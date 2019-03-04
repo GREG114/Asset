@@ -2,21 +2,136 @@
 
 @{
     ViewData["Title"] = "Create";
+    var stock = ViewBag.stock as LxGreg.Models.Stock;
+    int unitid = 0;
+    string itemnumber = "";
+    if (stock != null)
+    {
+        itemnumber = stock.itemItemNumber;
+        unitid = stock.unitId;
+    }
+  
+    var userid = "liuchao";// @User.Identity.Name.Split('\\')[1];
 }
+<script>
+     function ch() {
 
-<h1>Create</h1>
+        var unit = document.getElementById('unit');
+        var asset = document.getElementById('asset');
 
-<h4>Order</h4>
+        for (var i = 0; i < (unit.options.length); i++) {
+            if (unit.options[i].value == @unitid) {
+                unit.options.selectedIndex = unit.options[i].index
+                //      alert()
+            }
+         }
+
+         for (var i = 0; i < (asset.options.length); i++) {
+
+            if (asset.options[i].value == @itemnumber) {
+                asset.options.selectedIndex = asset.options[i].index
+                //      alert()
+            }
+        }
+        $.ajax({
+                type: "get",
+                data: { str: @itemnumber },
+                url: "/orders/getasset",
+                success: function (d) {
+                   // alert(JSON.stringify(d))
+                    for (var i in d) {
+                        var sn= d[i].itemNumber
+                        var info = d[i].itemNumber +"-"+ d[i].itemShortNumber +"-"+ d[i].itemName +"-"+ d[i].model
+                        addLi(info,sn)
+                    }
+                }
+            })
+
+        }
+
+
+
+    window.onload = ch
+
+</script>
+
+<script>
+    function getasset(ef) {
+
+        var asset = document.getElementById('asset');
+        asset.className = "form-control btn btn-outline-danger"
+        var evt = window.event || ef;
+        if (evt.keyCode == 13) {
+            query()
+        }
+    }
+    function clean() {
+        var li = document.getElementById("J_List")
+        var list = li.children
+        var listlength = list.length
+        for (var i = listlength - 1; i >= 0; i--) {
+            var o = list[i]
+            li.removeChild(o)
+        }
+    }
+    function query() {
+        var str = document.getElementById("search").value
+        clean()
+        $.ajax({
+            type: "get",
+            data: { str: str },
+            url: "/orders/getasset",
+            success: function (d) {
+                for (var i in d) {
+                    var sn = d[i].itemNumber
+                    var info = d[i].itemNumber + "-" + d[i].itemShortNumber + "-" + d[i].itemName + "-" + d[i].model
+                    addLi(info, sn)
+                }
+            }
+        })
+
+    }
+
+    function select(e) {
+
+        var test = e.getAttribute('pid');
+        var asset = document.getElementById('asset');
+        for (var i = 0; i < (asset.options.length); i++) {
+            if (asset.options[i].text == test) {
+                asset.options.selectedIndex = asset.options[i].index
+            }
+        }
+        asset.className = "form-control btn btn-outline-success"
+        clean()
+
+    }
+    function addLi(value, sn) {
+        var li = document.createElement("li");
+        li.setAttribute("class", "newLi");
+        var bt = document.createElement("Button");
+        bt.className = "btn btn-outline-success";
+        bt.setAttribute("pid", sn);
+        bt.setAttribute("onclick", "select(this)");
+        addSpan(bt, value)
+        document.getElementById("J_List").appendChild(li);
+        document.getElementById("J_List").appendChild(bt);
+    }
+    function addSpan(li, text) {
+        var span_1 = document.createElement("span");
+        span_1.innerHTML = text;
+        li.appendChild(span_1);
+    }
+</script>
+<h2>新建订单</h2>
+<hr />
+
+<input type="text" placeholder="查询料号(回车键执行)" id="search" onkeydown="getasset(event)" onchange="query()" />
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="OrderTime" class="control-label"></label>
-                <input asp-for="OrderTime" class="form-control" />
-                <span asp-validation-for="OrderTime" class="text-danger"></span>
-            </div>
+
             <div class="form-group">
                 <label asp-for="Quntity" class="control-label"></label>
                 <input asp-for="Quntity" class="form-control" />
@@ -27,31 +142,50 @@
                 <input asp-for="Mark" class="form-control" />
                 <span asp-validation-for="Mark" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="take" /> @Html.DisplayNameFor(model => model.take)
-                </label>
+            @if (ViewBag.take)
+            {
+
+                <input type="hidden" asp-for="take" checked="checked" />
+            }
+            else
+            {
+                <input type="hidden" asp-for="take" />
+            }
+            <div class="form-group">
+                <label asp-for="unitId" class="control-label">单位</label>
+                <select asp-for="unitId" id="unit" class="form-control" asp-items="ViewBag.unitId"></select>
             </div>
             <div class="form-group">
-                <label asp-for="unitId" class="control-label"></label>
-                <select asp-for="unitId" class ="form-control" asp-items="ViewBag.unitId"></select>
+                <label asp-for="itemItemNumber" class="control-label">料号</label>
+                <select asp-for="itemItemNumber" id="asset" class="form-control" asp-items="ViewBag.itemItemNumber"></select>
             </div>
-            <div class="form-group">
-                <label asp-for="itemItemNumber" class="control-label"></label>
-                <select asp-for="itemItemNumber" class ="form-control" asp-items="ViewBag.itemItemNumber"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="TakerId" class="control-label"></label>
-                <select asp-for="TakerId" class ="form-control" asp-items="ViewBag.TakerId"></select>
-            </div>
-            <div class="form-group">
+            @if (ViewBag.take)
+            {
+                <div class="form-group">
+                    <label asp-for="TakerId" class="control-label">领用人</label>
+                    <select asp-for="TakerId" class="form-control" asp-items="ViewBag.TakerId"></select>
+                </div>
+            }
+            else
+            {
+                <input type="hidden" asp-for="TakerId" value="@userid" />
+            }
+
+            <div class="form-group" hidden="hidden">
                 <label asp-for="OperaterId" class="control-label"></label>
-                <select asp-for="OperaterId" class ="form-control" asp-items="ViewBag.OperaterId"></select>
+                <input asp-for="OperaterId" value="@userid" />
             </div>
+
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
+    </div>
+    <div>
+        <div>
+            <ul id="J_List"></ul>
+        </div>
     </div>
 </div>
 
