@@ -47,10 +47,12 @@ namespace LxGreg.Controllers.Asset
 
         public string GetNewItemNumber(int storeid)
         {
-            var haved = _context.items.Where(c=>c.storeId==storeid).OrderByDescending(c=>c.storeId);
+            var haved = _context.items.Where(c=>c.storeId==storeid).OrderByDescending(c=>c.ItemShortNumber);
             if (haved.Count() > 0)
             {
-                var shortnow = Convert.ToInt32(haved.First().ItemShortNumber) + 1;
+                var lastitem = haved.First();
+                var shortnow = Convert.ToInt32(lastitem.ItemShortNumber);
+                shortnow++;
                 return storeid+"."+shortnow.ToString().PadLeft(4, '0');
             }
             return storeid + "." + "0001";

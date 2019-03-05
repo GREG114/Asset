@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LxGreg.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20190304140213_stockandunit")]
-    partial class stockandunit
+    [Migration("20190305005521_building")]
+    partial class building
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -66,7 +66,7 @@ namespace LxGreg.Migrations
 
                     b.Property<DateTime>("OrderTime");
 
-                    b.Property<int>("Quntity");
+                    b.Property<int>("Quantity");
 
                     b.Property<string>("TakerId");
 
@@ -95,7 +95,7 @@ namespace LxGreg.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CurrentQuntity");
+                    b.Property<int>("CurrentQuantity");
 
                     b.Property<string>("itemItemNumber");
 
@@ -129,9 +129,12 @@ namespace LxGreg.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("UnitName");
+                    b.Property<string>("UnitName")
+                        .IsRequired();
 
                     b.HasKey("Id");
+
+                    b.HasAlternateKey("UnitName");
 
                     b.ToTable("units");
                 });

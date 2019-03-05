@@ -66,6 +66,7 @@ namespace LxGreg.Controllers.Asset
                     ViewBag.stock = stock;
                 }
             }
+         
             ViewData["OperaterId"] = new SelectList(_context.managers, "Id", nameof(Manager.Name));
             ViewData["TakerId"] = new SelectList(_context.managers, "Id", nameof(Manager.Name));
             ViewData["itemItemNumber"] = new SelectList(_context.items, "ItemNumber", "ItemNumber");
@@ -78,7 +79,7 @@ namespace LxGreg.Controllers.Asset
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Quntity,Mark,take,unitId,itemItemNumber,TakerId,OperaterId")] Order order)
+        public async Task<IActionResult> Create([Bind("Id,Quantity,Mark,take,unitId,itemItemNumber,TakerId,OperaterId")] Order order)
         {
             if (ModelState.IsValid)
             {
@@ -87,17 +88,17 @@ namespace LxGreg.Controllers.Asset
                 if (stock.Count() == 1)
                 {
                     var targetstock = stock.First();
-                    if (targetstock.CurrentQuntity < order.Quntity && order.take)
+                    if (targetstock.CurrentQuantity < order.Quantity && order.take)
                     {
-                        return Json($"库存不足，目标仓库：{targetstock.item.store.StoreName}，当前库存：{targetstock.CurrentQuntity}");
+                        return Json($"库存不足，目标仓库：{targetstock.item.store.StoreName}，当前库存：{targetstock.CurrentQuantity}");
                     }
                     if (order.take)
                     {
-                        targetstock.CurrentQuntity -= order.Quntity;
+                        targetstock.CurrentQuantity -= order.Quantity;
                     }
                     else
                     {
-                        targetstock.CurrentQuntity += order.Quntity;
+                        targetstock.CurrentQuantity += order.Quantity;
                     }
 
 
@@ -115,13 +116,13 @@ namespace LxGreg.Controllers.Asset
                         {
                             itemItemNumber = order.itemItemNumber,
                             unitId = order.unitId,
-                            CurrentQuntity = order.Quntity
+                            CurrentQuantity = order.Quantity
                         });
                     }
                 }
                     _context.Add(order);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index),"stocks");
             }
             ViewData["OperaterId"] = new SelectList(_context.managers, "Id", "Id", order.OperaterId);
             ViewData["TakerId"] = new SelectList(_context.managers, "Id", "Id", order.TakerId);
@@ -158,7 +159,7 @@ namespace LxGreg.Controllers.Asset
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Id,OrderTime,Quntity,Mark,take,unitId,itemItemNumber,TakerId,OperaterId")] Order order)
+        public async Task<IActionResult> Edit(string id, [Bind("Id,OrderTime,Quantity,Mark,take,unitId,itemItemNumber,TakerId,OperaterId")] Order order)
         {
             if (id != order.Id)
             {

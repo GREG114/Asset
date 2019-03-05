@@ -48,11 +48,12 @@ namespace LxGreg.Models
     {
         public int id { get; set; }    
         public Item item { get; set; }
+        [Display(Name = "物料编码")]
         public string itemItemNumber { get; set; }
         public Unit unit { get; set; }
         public int unitId { get; set; }
         [Display(Name = "当前库存")]
-        public int CurrentQuntity { get; set; }
+        public int CurrentQuantity { get; set; }
     }
     public class Order
     {
@@ -60,7 +61,7 @@ namespace LxGreg.Models
         [Display(Name = "下单时间")]
         public DateTime OrderTime { get; set; }   
         [Display(Name = "数量")]
-        public int Quntity { get; set; }
+        public int Quantity { get; set; }
         [Display(Name = "备注")]
         public string Mark { get; set; }
         public bool take { get; set; }

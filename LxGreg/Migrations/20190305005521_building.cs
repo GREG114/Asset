@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace LxGreg.Migrations
 {
-    public partial class create : Migration
+    public partial class building : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -39,11 +39,12 @@ namespace LxGreg.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    UnitName = table.Column<string>(nullable: true)
+                    UnitName = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_units", x => x.Id);
+                    table.UniqueConstraint("AK_units_UnitName", x => x.UnitName);
                 });
 
             migrationBuilder.CreateTable(
@@ -74,7 +75,7 @@ namespace LxGreg.Migrations
                 {
                     Id = table.Column<string>(nullable: false),
                     OrderTime = table.Column<DateTime>(nullable: false),
-                    Quntity = table.Column<int>(nullable: false),
+                    Quantity = table.Column<int>(nullable: false),
                     Mark = table.Column<string>(nullable: true),
                     take = table.Column<bool>(nullable: false),
                     unitId = table.Column<int>(nullable: false),
@@ -118,24 +119,24 @@ namespace LxGreg.Migrations
                     id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     itemItemNumber = table.Column<string>(nullable: true),
-                    CurrentQuntity = table.Column<int>(nullable: false),
-                    UnitId = table.Column<int>(nullable: true)
+                    unitId = table.Column<int>(nullable: false),
+                    CurrentQuantity = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_stocks", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_stocks_units_UnitId",
-                        column: x => x.UnitId,
-                        principalTable: "units",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_stocks_items_itemItemNumber",
                         column: x => x.itemItemNumber,
                         principalTable: "items",
                         principalColumn: "ItemNumber",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_stocks_units_unitId",
+                        column: x => x.unitId,
+                        principalTable: "units",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -164,14 +165,14 @@ namespace LxGreg.Migrations
                 column: "unitId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_stocks_UnitId",
-                table: "stocks",
-                column: "UnitId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_stocks_itemItemNumber",
                 table: "stocks",
                 column: "itemItemNumber");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_stocks_unitId",
+                table: "stocks",
+                column: "unitId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -186,10 +187,10 @@ namespace LxGreg.Migrations
                 name: "managers");
 
             migrationBuilder.DropTable(
-                name: "units");
+                name: "items");
 
             migrationBuilder.DropTable(
-                name: "items");
+                name: "units");
 
             migrationBuilder.DropTable(
                 name: "stores");

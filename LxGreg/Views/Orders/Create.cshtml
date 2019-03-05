@@ -5,27 +5,31 @@
     var stock = ViewBag.stock as LxGreg.Models.Stock;
     int unitid = 0;
     string itemnumber = "";
+    bool stockhave = false;
     if (stock != null)
     {
+        stockhave = true;
         itemnumber = stock.itemItemNumber;
         unitid = stock.unitId;
     }
-  
+
     var userid = "liuchao";// @User.Identity.Name.Split('\\')[1];
 }
-<script>
-     function ch() {
+    <script>
+
+
+    function ch() {
+        document.getElementById('search').focus();
+      
 
         var unit = document.getElementById('unit');
         var asset = document.getElementById('asset');
-
         for (var i = 0; i < (unit.options.length); i++) {
             if (unit.options[i].value == @unitid) {
                 unit.options.selectedIndex = unit.options[i].index
                 //      alert()
             }
          }
-
          for (var i = 0; i < (asset.options.length); i++) {
 
             if (asset.options[i].value == @itemnumber) {
@@ -37,24 +41,34 @@
                 type: "get",
                 data: { str: @itemnumber },
                 url: "/orders/getasset",
-                success: function (d) {
+            success: function (d) {
+
                    // alert(JSON.stringify(d))
                     for (var i in d) {
                         var sn= d[i].itemNumber
                         var info = d[i].itemNumber +"-"+ d[i].itemShortNumber +"-"+ d[i].itemName +"-"+ d[i].model
                         addLi(info,sn)
                     }
-                }
-            })
+            }
+        })   
+    }
 
+
+
+    </script>
+
+<script>
+    function Init() {
+        document.getElementById('search').focus();
+        var str = '@stockhave'     
+        if (str != "False") {
+            ch()
+            document.getElementById('Quntity').focus();
         }
+    }
 
-
-
-    window.onload = ch
-
+    window.onload = Init
 </script>
-
 <script>
     function getasset(ef) {
 
@@ -102,7 +116,8 @@
             }
         }
         asset.className = "form-control btn btn-outline-success"
-        clean()
+        clean()        
+        document.getElementById('Quntity').focus();
 
     }
     function addLi(value, sn) {
@@ -133,9 +148,9 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-group">
-                <label asp-for="Quntity" class="control-label"></label>
-                <input asp-for="Quntity" class="form-control" />
-                <span asp-validation-for="Quntity" class="text-danger"></span>
+                <label asp-for="Quantity" class="control-label"></label>
+                <input asp-for="Quantity" id="Quntity" class="form-control" />
+                <span asp-validation-for="Quantity" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Mark" class="control-label"></label>

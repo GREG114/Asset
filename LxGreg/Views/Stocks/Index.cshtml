@@ -29,7 +29,7 @@
                 @Html.DisplayNameFor(model => model.item.Model)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CurrentQuntity)
+                @Html.DisplayNameFor(model => model.CurrentQuantity)
             </th>
             <th></th>
         </tr>
@@ -54,7 +54,7 @@
                 @Html.DisplayFor(modelItem => item.item.Model)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CurrentQuntity)
+                @Html.DisplayFor(modelItem => item.CurrentQuantity)
             </td>
             <td>
                 <a asp-controller="Orders" asp-action="Create" class="btn btn-success" asp-route-stockid="@item.id" asp-route-take="false">入库</a>

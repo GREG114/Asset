@@ -18,5 +18,9 @@ namespace LxGreg.Data
         public DbSet<Store> stores { get; set; }
         public DbSet<Item> items { get; set; }
         public DbSet<Manager> managers { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Unit>().HasAlternateKey(p => p.UnitName);
+        }
     }
 }
