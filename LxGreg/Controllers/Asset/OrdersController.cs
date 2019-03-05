@@ -18,11 +18,11 @@ namespace LxGreg.Controllers.Asset
         {
          
             _context = context;
-            if (_context.managers.Count() == 0)
+        /*    if (_context.managers.Count() <5)
             {
-                _context.managers.Add(new Manager { Id = "liuchao", Name = "管理员" });
-                _context.SaveChanges();
-            }
+                _context.managers.Add(new Manager { Id = "liuchao1", Name = "管理员1" });
+             //   _context.SaveChanges();
+            }*/
         }
 
         // GET: Orders
@@ -60,7 +60,7 @@ namespace LxGreg.Controllers.Asset
             ViewBag.take = take;
             if (stockid != 0)
             {
-                var stock = _context.stocks.Include(c => c.item).Where(c => c.id == stockid).First();
+                var stock = _context.stocks.Include(c => c.item).Include(c=>c.unit).Where(c => c.id == stockid).First();
                 if (stock != null)
                 {
                     ViewBag.stock = stock;
@@ -94,6 +94,7 @@ namespace LxGreg.Controllers.Asset
                     }
                     if (order.take)
                     {
+
                         targetstock.CurrentQuantity -= order.Quantity;
                     }
                     else
@@ -132,8 +133,22 @@ namespace LxGreg.Controllers.Asset
         }
         public IActionResult GetAsset(string str)
         {
-            return Json(_context.items.Where(c => c.ItemName.Contains(str) || c.ItemNumber.Contains(str) || c.Model.Contains(str)));
+            return Json(_context.items.Where(c => c.ItemName.Contains(str) || 
+            c.ItemNumber.Contains(str) || 
+            c.Model.Contains(str)
+            ));
         }
+
+        public IActionResult GetManager(string str)
+        {
+            var result = _context.managers.Where(
+                c => c.Id.Contains(str) ||
+                c.Name.Contains(str)
+                );
+            return Json(result);
+        }
+
+
         // GET: Orders/Edit/5
         public async Task<IActionResult> Edit(string id)
         {

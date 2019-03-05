@@ -2,6 +2,21 @@
     ViewData["Title"] = "Home Page";
 }
 
+
+
+<div id="app">
+    {{book}}
+</div>
+<script src="https://unpkg.com/vue/dist/vue.min.js"></script>
+<script>
+    var app = new vue({
+        el: '#app',
+        data: {
+            book: 'asdf'
+        }
+    })
+</script>
+
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
