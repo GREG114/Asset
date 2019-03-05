@@ -4,11 +4,8 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>订单查询</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
@@ -16,25 +13,25 @@
                 @Html.DisplayNameFor(model => model.OrderTime)
             </th>
             <th>
+             领用
+            </th>
+            <th>
+             物料编码
+            </th>
+            <th>
+              单位
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Quantity)
             </th>
             <th>
+              领用人
+            </th>
+            <th>
+           操作人
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Mark)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.take)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.unit)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.item)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Taker)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Operater)
             </th>
             <th></th>
         </tr>
@@ -46,31 +43,27 @@
                 @Html.DisplayFor(modelItem => item.OrderTime)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Quantity)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Mark)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.take)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.unit.Id)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.item.ItemNumber)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Taker.Id)
+                @Html.DisplayFor(modelItem => item.unit.Id)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Operater.Id)
+                @Html.DisplayFor(modelItem => item.Quantity)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                @Html.DisplayFor(modelItem => item.Taker.Name)
             </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Operater.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Mark)
+            </td>
+            <td></td>
         </tr>
 }
     </tbody>

@@ -4,13 +4,19 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>料号管理</h1>
 <p>
     <a asp-action="Create"  id="create" class="btn btn-outline-dark">料号新增</a>
 </p>
 <table class="table">
     <thead>
         <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ItemNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ItemShortNumber)
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.ItemName)
             </th>
@@ -21,10 +27,7 @@
                 @Html.DisplayNameFor(model => model.Mark)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ItemShortNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.store)
+                @Html.DisplayNameFor(model => model.store.StoreName)
             </th>
             <th></th>
         </tr>
@@ -32,6 +35,12 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ItemNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ItemShortNumber)
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ItemName)
             </td>
@@ -42,10 +51,7 @@
                 @Html.DisplayFor(modelItem => item.Mark)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ItemShortNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.store.Id)
+                @Html.DisplayFor(modelItem => item.store.StoreName)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ItemNumber">Edit</a> |
