@@ -12,106 +12,94 @@
         itemnumber = stock.itemItemNumber;
         unitid = stock.unitId;
     }
-
     var userid = "liuchao";// @User.Identity.Name.Split('\\')[1];
 }
-    <script>
-
-
-    function ch() {
-        document.getElementById('search').focus();
-      
-
-        var unit = document.getElementById('unit');
-        var asset = document.getElementById('asset');
-        for (var i = 0; i < (unit.options.length); i++) {
-            if (unit.options[i].value == @unitid) {
-                unit.options.selectedIndex = unit.options[i].index
-                //      alert()
-            }
-         }
-         for (var i = 0; i < (asset.options.length); i++) {
-
-            if (asset.options[i].value == @itemnumber) {
-                asset.options.selectedIndex = asset.options[i].index
-                //      alert()
-            }
-        }
-        $.ajax({
-                type: "get",
-                data: { str: @itemnumber },
-                url: "/orders/getasset",
-            success: function (d) {
-
-                   // alert(JSON.stringify(d))
-                    for (var i in d) {
-                        var sn= d[i].itemNumber
-                        var info = d[i].itemNumber +"-"+ d[i].itemShortNumber +"-"+ d[i].itemName +"-"+ d[i].model
-                        addLi(info,sn)
-                    }
-            }
-        })   
-    }
-
-
-
-    </script>
 
 <script>
+    //初始化，决定光标放在哪里，或者是否要执行首次查询
     function Init() {
-        document.getElementById('search').focus();
-        var str = '@stockhave'
+        var take = '@ViewBag.take';
+        if (take == 'True') {
+            document.getElementById('searchuser').focus()
+        }
+        else {
+              var stock = '@stockhave';
+            if (stock == 'True') {
 
-        if (str=='False') {
-            ch()
-            document.getElementById('Quntity').focus();
-        } else {
-            $.ajax({
-                type: "get",
-                data: { str: @itemnumber },
-                url: "/orders/getasset",
-                success: function (d) {
-                   // alert(JSON.stringify(d))           
-                    var info = d[0].itemNumber + "-" + d[0].itemShortNumber + "-" + d[0].itemName + "-" + d[0].model       
-                    var target = document.getElementById('target');
-                    target.className = "form-control btn btn-outline-success"
-                    target.value = info
-                }
-            })   
-            
-            //document.getElementById('item').hidden='hidden'
-            document.getElementById('searchuser').focus();
+            } else {
+                document.getElementById('itemtarget').focus()
+            }
         }
     }
-
     window.onload = Init
 </script>
 <script>
-    function getasset(ef) {
-
+    //选择物料执行的方法，配置数据， 并显示物料信息
+    function Itemselectd(e) {
+        var test = e.getAttribute('pid');
         var asset = document.getElementById('asset');
-        asset.className = "form-control btn btn-outline-danger"
-            query()
-    }
-    function getmanager(ef) {
+        for (var i = 0; i < (asset.options.length); i++) {
+            if (asset.options[i].text == test) {
+                asset.options.selectedIndex = asset.options[i].index
+            }
+        }
         clean()
-        var userstr = document.getElementById('searchuser').value
+        //展示选中的物料
+            var bttext = e.value
+            var target = document.getElementById('itemtarget');
+            target.className = "form-control btn btn-outline-success"
+            target.value = bttext
+            document.getElementById('Quntity').focus();
+    }
+    //选择用户执行的方法，配置数据， 并显示用户信息
+    function Userselected(e) {
+        clean()
+        var userse = document.getElementById('userselect');
+        for (var i = 0; i < (userse.options.length); i++) {   
+            if (userse.options[i].value ==  e.getAttribute('pid')) {   
+                userse.options.selectedIndex = userse.options[i].index
+            }
+        }
+        var target = document.getElementById('searchuser');
+        target.className = "form-control btn btn-outline-success"
+        target.value= e.getAttribute('pid')
+         document.getElementById('Quntity').focus();
+    }
+    //万能查询，携带自身信息进来，把后续要执行的方法名也传递进来
+    function Squery(e,fn) {
+        //input要提供查询目的，想办法提供坐标，还要把展示出来的东西的onclick方法传进去
+        var use2 = e.getAttribute('use2');  
+        var domid = e.getAttribute('id')
+        //执行fn所代表的方法，如果想把BtnMethod方法传进来，就用字符串传，带测试
+    //    window[fn].call(this)
+        clean()
         $.ajax({
             type: "get",
-            data: { str: userstr },
-            url: "/orders/getmanager",
+            data: { usefor: use2, str: e.value },
+            url: "/orders/Query",
             success: function (d) {
-             //   alert(JSON.stringify(d))
-                for (var i in d) {
-                    var sn = d[i].id
-                    var info = d[i].id + "-" + d[i].name
-
-                    addLi(info, sn,"user")
-
+                switch (use2) {
+                    case "item":
+                         for (var i in d) {                        
+                          var value = d[i].itemNumber
+                          var info = d[i].itemNumber + "-" + d[i].itemName
+                          addLi(info, value,fn)                        
+                        }
+                        break;
+                    case "user":
+                            for (var i in d) {                        
+                          var value = d[i].id
+                          var info = d[i].id + "-" + d[i].name
+                          addLi(info, value,fn,domid)                        
+                        }
+                        break;
+                    default: break;
                 }
+                   
             }
-        })
+        })   
     }
+    //清除展示区
     function clean() {
         var li = document.getElementById("J_List")
         var list = li.children
@@ -121,70 +109,21 @@
             li.removeChild(o)
         }
     }
-    function query() {
-        var str = document.getElementById("search").value
-        clean()
-        $.ajax({
-            type: "get",
-            data: { str: str },
-            url: "/orders/getasset",
-            success: function (d) {
-                for (var i in d) {
-                    var sn = d[i].itemNumber
-                    var info = d[i].itemNumber + "-" + d[i].itemShortNumber + "-" + d[i].itemName + "-" + d[i].model
-                    addLi(info, sn)
-                }
-            }
-        })
-
-    }
-
-    function select(e) {
-        var test = e.getAttribute('pid');
-      //  alert(bttext);
-        var asset = document.getElementById('asset');
-        for (var i = 0; i < (asset.options.length); i++) {
-            if (asset.options[i].text == test) {
-                asset.options.selectedIndex = asset.options[i].index
-            }
-        }
-        clean()
-        //展示选中的物料
-        var IsUser = e.getAttribute('user')
-        if (IsUser == null) {
-            var bttext = e.value
-            var target = document.getElementById('target');
-            target.className = "form-control btn btn-outline-success"
-            target.value = bttext
-         
-        } else {
-            //点击按钮会选择用户
-            var userse = document.getElementById('userselect');
-            for (var i = 0; i < (userse.options.length); i++) {                   
-                if (userse.options[i].value == test) {     
-                userse.options.selectedIndex = userse.options[i].index
-                }
-            }
-            userse.className = "form-control btn btn-outline-danger"
-        }
-         document.getElementById('Quntity').focus();
-    }
-    function addLi(value, sn,user) {
+    //往展示去里塞带有标签的按钮，同时给按钮配置click事件的方法
+    function addLi(text, value,fn) {
+        //获取展示区
         var li = document.createElement("li");
         li.setAttribute("class", "newLi");
         var bt = document.createElement("Button");
         bt.className = "btn btn-outline-success";
-        bt.setAttribute("pid", sn);
-        bt.setAttribute("value", value);
-        bt.setAttribute("onclick", "select(this)");
-        if (user == "user") {            
-            bt.className = "btn btn-outline-danger";
-            bt.setAttribute("user","user")
-        }
-        addSpan(bt, value)
+        bt.setAttribute("pid", value);
+        bt.setAttribute("value", text);
+        bt.setAttribute("onclick",fn+'(this)');      
+        addSpan(bt, text)
         document.getElementById("J_List").appendChild(li);
-        document.getElementById("J_List").appendChild(bt);
+        document.getElementById("J_List").appendChild(bt); 
     }
+    //塞东西用的验证
     function addSpan(li, text) {
         var span_1 = document.createElement("span");
         span_1.innerHTML = text;
@@ -193,7 +132,6 @@
 </script>
 <h2>新建订单</h2>
 <hr />
-
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -201,12 +139,13 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             @if (ViewBag.take)
             {
-        <div class="form-group">
-            <label asp-for="TakerId" class="control-label">领用人</label>
-            <select asp-for="TakerId" class="form-control" id="userselect" asp-items="ViewBag.TakerId"></select>    
-            <input type="text" class="form-control" placeholder="查询用户" id="searchuser" onkeyup="getmanager(event)" onkeydown="if(event.keyCode==13){return false;}" />
+                <div class="form-group">
+                    <label asp-for="TakerId" class="control-label">领用人</label>
+                    <input type="text" class="form-control" placeholder="查询用户" id="searchuser" use2="user" onkeyup="Squery(this,'Userselected')" onkeydown="if(event.keyCode==13){return false;}" />
 
-        </div>
+                    <select asp-for="TakerId" class="form-control" id="userselect" asp-items="ViewBag.TakerId" hidden="hidden"></select>
+
+                </div>
             }
             else
             {
@@ -231,26 +170,49 @@
             {
                 <input type="hidden" asp-for="take" />
             }
-        <div class="form-group">
-            <label asp-for="unitId" class="control-label">单位</label>
-            @if (stockhave)
+            <div class="form-group">
+                <label asp-for="unitId" class="control-label">单位</label>
+                @if (stockhave)
+                {
+                    <input class="form-control" value="@stock.unit.UnitName" />
+                    <input asp-for="unitId" class="form-control" value="@stock.unitId" hidden="hidden" />
+                }
+                else
+                {
+                    <select asp-for="unitId" id="unit" class="form-control" asp-items="ViewBag.unitId"></select>
+                }
+
+            </div>
+
+
+            @if (ViewBag.take)
             {
-                <input class="form-control" value="@stock.unit.UnitName" />
-                <input asp-for="unitId" class="form-control" value="@stock.unitId" hidden="hidden" />
+                <div class="form-group" id="item">
+                    <label asp-for="itemItemNumber" class="control-label">料号</label>
+                    <input id="target" value="@stock.item.ItemName" class="form-control" readonly="readonly" />
+                    <input asp-for="itemItemNumber" value="@itemnumber" class="form-control" hidden="hidden"/>
+                </div>
+
             }
             else
             {
-                <select asp-for="unitId" id="unit" class="form-control" asp-items="ViewBag.unitId"></select>
+        <div class="form-group" id="item">
+            <label asp-for="itemItemNumber" class="control-label">料号</label>
+            @if (stockhave)
+            {
+                <input id="target" value="@stock.item.ItemName" class="form-control" readonly="readonly" />
+                <input asp-for="itemItemNumber" value="@itemnumber" class="form-control" hidden="hidden" />
             }
+            else
+            {
+                <input type="text" placeholder="查询料号" class="form-control" use2="item" id="itemtarget" onkeyup="Squery(this,'Itemselectd')" onkeydown="if(event.keyCode==13){return false;}" />
+                <select asp-for="itemItemNumber" id="asset" class="form-control" asp-items="ViewBag.itemItemNumber" hidden="hidden"></select>
 
+            }
         </div>
 
-            <div class="form-group" id="item" >
-                <label asp-for="itemItemNumber" class="control-label">料号</label>
-                <input type="text" placeholder="查询料号" id="search" onkeyup="getasset(event)"  onkeydown="if(event.keyCode==13){return false;}" />
-                <input id="target" placeholder="目标物料" class="form-control" readonly="readonly"  />
-                <select asp-for="itemItemNumber" id="asset" class="form-control" asp-items="ViewBag.itemItemNumber" hidden="hidden"></select>
-            </div>
+            }
+            <br /> <br /> <br />
 
 
             <div class="form-group" hidden="hidden">

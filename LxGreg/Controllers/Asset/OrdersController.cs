@@ -16,13 +16,13 @@ namespace LxGreg.Controllers.Asset
 
         public OrdersController(AppDbContext context)
         {
-         
+
             _context = context;
-        /*    if (_context.managers.Count() <5)
-            {
-                _context.managers.Add(new Manager { Id = "liuchao1", Name = "管理员1" });
-             //   _context.SaveChanges();
-            }*/
+            /*    if (_context.managers.Count() <5)
+                {
+                    _context.managers.Add(new Manager { Id = "liuchao1", Name = "管理员1" });
+                 //   _context.SaveChanges();
+                }*/
         }
 
         // GET: Orders
@@ -60,17 +60,17 @@ namespace LxGreg.Controllers.Asset
             ViewBag.take = take;
             if (stockid != 0)
             {
-                var stock = _context.stocks.Include(c => c.item).Include(c=>c.unit).Where(c => c.id == stockid).First();
+                var stock = _context.stocks.Include(c => c.item).Include(c => c.unit).Where(c => c.id == stockid).First();
                 if (stock != null)
                 {
                     ViewBag.stock = stock;
                 }
             }
-         
+
             ViewData["OperaterId"] = new SelectList(_context.managers, "Id", nameof(Manager.Name));
             ViewData["TakerId"] = new SelectList(_context.managers, "Id", nameof(Manager.Name));
             ViewData["itemItemNumber"] = new SelectList(_context.items, "ItemNumber", "ItemNumber");
-            ViewData["unitId"] = new SelectList(_context.units, "Id",nameof(Unit.UnitName));
+            ViewData["unitId"] = new SelectList(_context.units, "Id", nameof(Unit.UnitName));
             return View();
         }
 
@@ -84,7 +84,7 @@ namespace LxGreg.Controllers.Asset
             if (ModelState.IsValid)
             {
                 order.OrderTime = DateTime.Now;
-                var stock = _context.stocks.Include(c=>c.item).Where(c => c.itemItemNumber == order.itemItemNumber&&c.unitId==order.unitId);
+                var stock = _context.stocks.Include(c => c.item).Where(c => c.itemItemNumber == order.itemItemNumber && c.unitId == order.unitId);
                 if (stock.Count() == 1)
                 {
                     var targetstock = stock.First();
@@ -121,9 +121,9 @@ namespace LxGreg.Controllers.Asset
                         });
                     }
                 }
-                    _context.Add(order);
+                _context.Add(order);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index),"stocks");
+                return RedirectToAction(nameof(Index), "stocks");
             }
             ViewData["OperaterId"] = new SelectList(_context.managers, "Id", "Id", order.OperaterId);
             ViewData["TakerId"] = new SelectList(_context.managers, "Id", "Id", order.TakerId);
@@ -133,8 +133,8 @@ namespace LxGreg.Controllers.Asset
         }
         public IActionResult GetAsset(string str)
         {
-            return Json(_context.items.Where(c => c.ItemName.Contains(str) || 
-            c.ItemNumber.Contains(str) || 
+            return Json(_context.items.Where(c => c.ItemName.Contains(str) ||
+            c.ItemNumber.Contains(str) ||
             c.Model.Contains(str)
             ));
         }
@@ -146,6 +146,33 @@ namespace LxGreg.Controllers.Asset
                 c.Name.Contains(str)
                 );
             return Json(result);
+        }
+
+        public IActionResult Query(string usefor, string str)
+        {
+            try
+            {
+                switch (usefor)
+                {
+                    case "user":
+                        var result = _context.managers.Where(
+                            c => c.Id.Contains(str) ||
+                            c.Name.Contains(str)
+                            );
+                        return Json(result);
+                    case "item":
+                        return Json(_context.items.Where(c => c.ItemName.Contains(str) ||
+                        c.ItemNumber.Contains(str) ||
+                        c.Model.Contains(str)
+                        ));
+                    default: return Json(null);
+                }
+
+            } catch(Exception ex)
+            {
+                return Json(ex);
+            }
+  
         }
 
 
