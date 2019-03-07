@@ -131,22 +131,6 @@ namespace LxGreg.Controllers.Asset
             ViewData["unitId"] = new SelectList(_context.units, "Id", "Id", order.unitId);
             return View(order);
         }
-        public IActionResult GetAsset(string str)
-        {
-            return Json(_context.items.Where(c => c.ItemName.Contains(str) ||
-            c.ItemNumber.Contains(str) ||
-            c.Model.Contains(str)
-            ));
-        }
-
-        public IActionResult GetManager(string str)
-        {
-            var result = _context.managers.Where(
-                c => c.Id.Contains(str) ||
-                c.Name.Contains(str)
-                );
-            return Json(result);
-        }
 
         public IActionResult Query(string usefor, string str)
         {
