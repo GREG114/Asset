@@ -1,221 +1,89 @@
 ﻿@model LxGreg.Models.Order
 
 @{
-    ViewData["Title"] = "Create";
+    #region 准备数据
+    //数据准备
+    ViewData["Title"] = "下单";
     var stock = ViewBag.stock as LxGreg.Models.Stock;
+    //单位
     int unitid = 0;
+    //物料编码
     string itemnumber = "";
+    //判断是从列表选的还是新增入库
     bool stockhave = false;
+    //如果为真，就给单位和物料编码赋值
     if (stock != null)
     {
+
         stockhave = true;
         itemnumber = stock.itemItemNumber;
         unitid = stock.unitId;
     }
+    //取用户名
     var userid = "liuchao";// @User.Identity.Name.Split('\\')[1];
+    #endregion
 }
-<script src="https://unpkg.com/vue/dist/vue.min.js"></script>
-<script>
-    //初始化，决定光标放在哪里，或者是否要执行首次查询
-    function Init() {
-        var take = '@ViewBag.take';
-        if (take == 'True') {
-            document.getElementById('searchuser').focus()
-        }
-        else {
-              var stock = '@stockhave';
-            if (stock == 'True') {
-                  document.getElementById('Quntity').focus();
-            } else {
-                document.getElementById('itemtarget').focus()
-            }
-        }
-    }
-    window.onload = Init
-</script>
-<script>
-    //选择物料执行的方法，配置数据， 并显示物料信息
-    function Itemselectd(e) {
-        var test = e.getAttribute('pid');
-        var asset = document.getElementById('asset');
-        for (var i = 0; i < (asset.options.length); i++) {
-            if (asset.options[i].text == test) {
-                asset.options.selectedIndex = asset.options[i].index
-            }
-        }
-        clean()
-        //展示选中的物料
-        var bttext = e.value
-        var target = document.getElementById('itemtarget');
-        target.className = "form-control btn btn-outline-success"
-        target.value = bttext
-        document.getElementById('Quntity').focus();
-    }
-    //选择用户执行的方法，配置数据， 并显示用户信息
-    function Userselected(e) {
-        clean()
-        var userse = document.getElementById('userselect');
-        for (var i = 0; i < (userse.options.length); i++) {
-            if (userse.options[i].value == e.getAttribute('pid')) {
-                userse.options.selectedIndex = userse.options[i].index
-            }
-        }
-        var target = document.getElementById('searchuser');
-        target.className = "form-control btn btn-outline-success"
-        target.value = e.getAttribute('pid')
-        document.getElementById('Quntity').focus();
-    }
-    //万能查询，携带自身信息进来，把后续要执行的方法名也传递进来
-    function Squery(e, fn) {
-        //input要提供查询目的，想办法提供坐标，还要把展示出来的东西的onclick方法传进去
-        var use2 = e.getAttribute('use2');
-        var domid = e.getAttribute('id')
-        //执行fn所代表的方法，如果想把BtnMethod方法传进来，就用字符串传，带测试
-        //    window[fn].call(this)
-        clean()
 
-        $.ajax({
-            type: "get",
-            data: { usefor: use2, str: e.value },
-            url: "/orders/Query",
-            success: function (d) {
-                switch (use2) {
-                    case "item":
-                        for (var i in d) {
-                            var value = d[i].itemNumber
-                            var info = d[i].itemNumber + "-" + d[i].itemName + "-" + d[i].model
-                            addLi(info, value, fn)
-                        }
-                        break;
-                    case "user":
-                        for (var i in d) {
-                            var value = d[i].id
-                            var info = d[i].id + "-" + d[i].name
-                            addLi(info, value, fn, domid)
-                        }
-                        break;
-                    default: break;
-                }
-
-            }
-        })
-    }
-    //清除展示区
-    function clean() {
-        var li = document.getElementById("J_List")
-        var list = li.children
-        var listlength = list.length
-        for (var i = listlength - 1; i >= 0; i--) {
-            var o = list[i]
-            li.removeChild(o)
-        }
-    }
-    //往展示去里塞带有标签的按钮，同时给按钮配置click事件的方法
-    function addLi(text, value, fn) {
-        //获取展示区
-        var li = document.createElement("li");
-        li.setAttribute("class", "newLi");
-        var bt = document.createElement("Button");
-        bt.className = "btn btn-outline-success";
-        bt.setAttribute("pid", value);
-        bt.setAttribute("value", text);
-        bt.setAttribute("onclick", fn + '(this)');
-        addSpan(bt, text)
-        document.getElementById("J_List").appendChild(li);
-        document.getElementById("J_List").appendChild(bt);
-    }
-    //塞东西用的验证
-    function addSpan(li, text) {
-        var span_1 = document.createElement("span");
-        span_1.innerHTML = text;
-        li.appendChild(span_1);
-    }
+<script src="https://unpkg.com/vue/dist/vue.min.js">
+    var taker = 'test';
 </script>
 <h2>新建订单</h2>
 
-<hr />
+<br />
 <hr />
 <div class="row">
-    <div class="col-md-4">
-
+    <div class="col-md-4" id="form">
         <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            @if (ViewBag.take)
-            {
-                <div class="form-group">
-                    <label asp-for="TakerId" class="control-label">领用人</label>
-                    <input type="text" class="form-control" placeholder="查询用户" id="searchuser" use2="user" onkeyup="Squery(this,'Userselected')" onkeydown="if(event.keyCode==13){return false;}" />
-
-                    <select asp-for="TakerId" class="form-control" id="userselect" asp-items="ViewBag.TakerId" hidden="hidden"></select>
-
+         <div class="form-group">
+                    <label class="control-label">目标物料</label>
+                    <input placeholder="未选中目标" class="form-control" />
                 </div>
-            }
-            else
-            {
-                <input type="hidden" asp-for="TakerId" value="@userid" />
-            }
-            <div class="form-group">
-                <label asp-for="Quantity" class="control-label"></label>
-                <input asp-for="Quantity" id="Quntity" class="form-control" />
-                <span asp-validation-for="Quantity" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Mark" class="control-label"></label>
-                <input asp-for="Mark" class="form-control" />
-                <span asp-validation-for="Mark" class="text-danger"></span>
-            </div>
-            @if (ViewBag.take)
-            {
+          
 
-                <input type="hidden" asp-for="take" checked="checked" />
-            }
-            else
-            {
-                <input type="hidden" asp-for="take" />
-            }
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="unitId" class="control-label">单位</label>
-                @if (stockhave)
+                @if (!ViewBag.take)
                 {
-                    <input class="form-control" value="@stock.unit.UnitName" />
-                    <input asp-for="unitId" class="form-control" value="@stock.unitId" hidden="hidden" />
+                    <input type="hidden" asp-for="TakerId" value="@userid" />
                 }
                 else
                 {
-                    <select asp-for="unitId" id="unit" class="form-control" asp-items="ViewBag.unitId"></select>
+                    <div class="form-group">
+                        <label asp-for="TakerId" class="control-label">领用人</label>
+                        <input placeholder="领用人" id="taker" class="form-control" />
+                    </div>
+
                 }
-
             </div>
-
-
-            @if (ViewBag.take)
-            {
-                <div class="form-group" id="item">
-                    <label asp-for="itemItemNumber" class="control-label">料号</label>
-                    <input id="target" value="@stock.item.ItemName" class="form-control" readonly="readonly" />
+            <div class="form-group">
+                @if (stockhave)
+                {
                     <input asp-for="itemItemNumber" value="@itemnumber" class="form-control" hidden="hidden" />
-                </div>
-
-            }
-            else
-            {
-                <div class="form-group" id="item">
-                    <label asp-for="itemItemNumber" class="control-label">料号</label>
-                    @if (stockhave)
-                    {
-                        <input id="target" value="@stock.item.ItemName" class="form-control" readonly="readonly" />
-                        <input asp-for="itemItemNumber" value="@itemnumber" class="form-control" hidden="hidden" />
-                    }
-                    else
-                    {
-                        <input type="text" placeholder="查询料号" class="form-control" use2="item" id="itemtarget" onkeyup="Squery(this,'Itemselectd')" onkeydown="if(event.keyCode==13){return false;}" />
-                        <select asp-for="itemItemNumber" id="asset" class="form-control" asp-items="ViewBag.itemItemNumber" hidden="hidden"></select>
-
-                    }
-                </div>
-
-            }
-            <br /> <br /> <br />
+                }
+                else
+                { <div class="form-group" id="item">
+                        <label asp-for="itemItemNumber" class="control-label">料号</label>
+                        <input asp-for="itemItemNumber" id="itemnumber" placeholder="物料编码" class="form-control" />
+                    </div>
+                }
+            </div>
+            <div class="form-group">
+                @if (stockhave)
+                {
+                    <input asp-for="unitId" value="@unitid" class="form-control" hidden="hidden" />
+                }
+                else
+                { <div class="form-group" id="item">
+                        <label asp-for="unitId" class="control-label">单位</label>
+                        <select asp-for="unitId" id="unit" class="form-control" asp-items="ViewBag.unitId"></select>
+                    </div>
+                }
+            </div>
+            <div class="form-group">
+                <label asp-for="Quantity" class="control-label"></label>
+                <input asp-for="Quantity" id="Quantity" class="form-control" />
+                <span asp-validation-for="Quantity" class="text-danger"></span>
+            </div>
 
 
             <div class="form-group" hidden="hidden">
@@ -223,110 +91,33 @@
                 <input asp-for="OperaterId" value="@userid" />
             </div>
 
-
             <div class="form-group">
                 <input type="submit" value="按回车键下单" class="btn btn-primary" />
             </div>
-
         </form>
-
-    </div>
-    <div>
-        <div>
-            <ul id="J_List"></ul>
-        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-<!-- Vue 测试区 -->
-
-<div id="app" class="col-md-12 text-danger" style="height:40px;z-index:2;position: relative;">
-    <div class="form-group">
-        <input type="text" placeholder="查询目标（可以是用户或者是物料。。。）" class="form-control " @@keyup="enter" />
-        <ul id="showarea" class="list-group col-md-4">
-            <li v-for="button in buttons" class="btn btn-info form-control" test="{{button}}" @@click="target" > {{button}}</li>
-
-        </ul>
-    </div>
-
-
-
-</div>
 
 
 
 
 <script>
-    function initapp() {
-        display = false;
-        result = [];
+    var take = false;
+    var stock = false;
+    if ('@ViewBag.take' == 'True') {
+        take = true;
     }
-    var result = [];
-    function query(use2, str) {
-        $.ajax({
-            type: "get",
-            data: { usefor: use2, str: str },
-            url: "/orders/Query",
-            success: function (d) {
-                for (var item in d) {
-                    result.push(d[item].itemNumber+'-'+d[item].itemName+'-'+d[item].model)
-                }
-            }
-        })
-    }
-    var display = true;
-    function btnclick(e) {
-        initapp()
-    }
-    var app = new Vue({
-        el: '#app',
-        data: {
-
-            show: display,
-            buttons: result
-        },
-        mounted: function () {
-            var _this = this;
-            //setInterval函数是创建一个间歇性计时器，第一个参数是要执行的方法，第二个参数是以毫秒显示的时间
-            //那么就会间歇性执行第一个参数里的方法
-            this.timer = setInterval(function () {
-                //这里修改了函数里的date属性，由于tmd是双向实时绑定，页面上就会在div里实时的更新时间，碉堡了
-                //   _this.date = new Date()
-                _this.show = display;
-                _this.buttons = result;
-            }, 50)
-        },
-        beforeDestroy: function () {
-            if (this.timer) {
-                clearInterval(this.timer);
-            }
-        },
-        methods: {
-            enter: function (e) {
-                display = true;
-                result.length = 0
-                //取该控件的值
-                var str = e.currentTarget.value;
-                query('item', str)
-                if (e.keyCode == 13) {
-                    return false
-                }
-            },
-            target: function (e) {
-                initapp()
-                var Item = e.currentTarget.innerHTML
-
-
-               
-            }
+    if ('@stockhave' == 'True') {
+        stock = true;
+    }    
+    if (take) {
+        document.getElementById('taker').focus()
+    } else {
+        if (stock) {
+            document.getElementById('Quantity').focus();
+        } else {
+            document.getElementById('itemnumber').focus();
         }
-    })
+    }
 </script>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
