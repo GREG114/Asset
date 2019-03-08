@@ -2,21 +2,14 @@
     ViewData["Title"] = "Home Page";
 }
 
-
+<input type="button" onclick="change()" value="false" />
 
 <script src="https://unpkg.com/vue/dist/vue.min.js"></script>
 
 <div id="app">
     <p v-if="show">显示这段</p>
 </div>
-<script>
-    var app = new Vue({
-        el: '#app',
-        data: {
-            show:true
-        }
-    })
-</script>
+
 
 
 <div id="app1">
@@ -28,13 +21,18 @@
 
 
 <script>
+    
+    var test = 100;
+    function change() {
+        test = 40;
+    }
     var app = new Vue({
         el: '#app1',
         data: {
-            date:new Date(),
-            number: 100,
+            date: new Date(),
+            number: test,
             isOK: false,
-            text:"123,456"
+            text: "123,456"
         },
         mounted: function () {
             var _this = this;
@@ -42,8 +40,9 @@
             //那么就会间歇性执行第一个参数里的方法
             this.timer = setInterval(function () {
                 //这里修改了函数里的date属性，由于tmd是双向实时绑定，页面上就会在div里实时的更新时间，碉堡了
-                _this.date=new Date()
-            },1000)
+                _this.date = new Date()
+                _this.number = test;
+            }, 1000)
         },
         beforeDestroy: function () {
             if (this.timer) {

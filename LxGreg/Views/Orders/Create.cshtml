@@ -14,7 +14,7 @@
     }
     var userid = "liuchao";// @User.Identity.Name.Split('\\')[1];
 }
-
+<script src="https://unpkg.com/vue/dist/vue.min.js"></script>
 <script>
     //初始化，决定光标放在哪里，或者是否要执行首次查询
     function Init() {
@@ -45,34 +45,35 @@
         }
         clean()
         //展示选中的物料
-            var bttext = e.value
-            var target = document.getElementById('itemtarget');
-            target.className = "form-control btn btn-outline-success"
-            target.value = bttext
-            document.getElementById('Quntity').focus();
+        var bttext = e.value
+        var target = document.getElementById('itemtarget');
+        target.className = "form-control btn btn-outline-success"
+        target.value = bttext
+        document.getElementById('Quntity').focus();
     }
     //选择用户执行的方法，配置数据， 并显示用户信息
     function Userselected(e) {
         clean()
         var userse = document.getElementById('userselect');
-        for (var i = 0; i < (userse.options.length); i++) {   
-            if (userse.options[i].value ==  e.getAttribute('pid')) {   
+        for (var i = 0; i < (userse.options.length); i++) {
+            if (userse.options[i].value == e.getAttribute('pid')) {
                 userse.options.selectedIndex = userse.options[i].index
             }
         }
         var target = document.getElementById('searchuser');
         target.className = "form-control btn btn-outline-success"
-        target.value= e.getAttribute('pid')
-         document.getElementById('Quntity').focus();
+        target.value = e.getAttribute('pid')
+        document.getElementById('Quntity').focus();
     }
     //万能查询，携带自身信息进来，把后续要执行的方法名也传递进来
-    function Squery(e,fn) {
+    function Squery(e, fn) {
         //input要提供查询目的，想办法提供坐标，还要把展示出来的东西的onclick方法传进去
-        var use2 = e.getAttribute('use2');  
+        var use2 = e.getAttribute('use2');
         var domid = e.getAttribute('id')
         //执行fn所代表的方法，如果想把BtnMethod方法传进来，就用字符串传，带测试
-    //    window[fn].call(this)
+        //    window[fn].call(this)
         clean()
+
         $.ajax({
             type: "get",
             data: { usefor: use2, str: e.value },
@@ -80,24 +81,24 @@
             success: function (d) {
                 switch (use2) {
                     case "item":
-                         for (var i in d) {                        
-                          var value = d[i].itemNumber
-                          var info = d[i].itemNumber + "-" + d[i].itemName
-                          addLi(info, value,fn)                        
+                        for (var i in d) {
+                            var value = d[i].itemNumber
+                            var info = d[i].itemNumber + "-" + d[i].itemName + "-" + d[i].model
+                            addLi(info, value, fn)
                         }
                         break;
                     case "user":
-                            for (var i in d) {                        
-                          var value = d[i].id
-                          var info = d[i].id + "-" + d[i].name
-                          addLi(info, value,fn,domid)                        
+                        for (var i in d) {
+                            var value = d[i].id
+                            var info = d[i].id + "-" + d[i].name
+                            addLi(info, value, fn, domid)
                         }
                         break;
                     default: break;
                 }
-                   
+
             }
-        })   
+        })
     }
     //清除展示区
     function clean() {
@@ -110,7 +111,7 @@
         }
     }
     //往展示去里塞带有标签的按钮，同时给按钮配置click事件的方法
-    function addLi(text, value,fn) {
+    function addLi(text, value, fn) {
         //获取展示区
         var li = document.createElement("li");
         li.setAttribute("class", "newLi");
@@ -118,10 +119,10 @@
         bt.className = "btn btn-outline-success";
         bt.setAttribute("pid", value);
         bt.setAttribute("value", text);
-        bt.setAttribute("onclick",fn+'(this)');      
+        bt.setAttribute("onclick", fn + '(this)');
         addSpan(bt, text)
         document.getElementById("J_List").appendChild(li);
-        document.getElementById("J_List").appendChild(bt); 
+        document.getElementById("J_List").appendChild(bt);
     }
     //塞东西用的验证
     function addSpan(li, text) {
@@ -131,10 +132,12 @@
     }
 </script>
 <h2>新建订单</h2>
+
 <hr />
 <hr />
 <div class="row">
     <div class="col-md-4">
+
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             @if (ViewBag.take)
@@ -190,26 +193,26 @@
                 <div class="form-group" id="item">
                     <label asp-for="itemItemNumber" class="control-label">料号</label>
                     <input id="target" value="@stock.item.ItemName" class="form-control" readonly="readonly" />
-                    <input asp-for="itemItemNumber" value="@itemnumber" class="form-control" hidden="hidden"/>
+                    <input asp-for="itemItemNumber" value="@itemnumber" class="form-control" hidden="hidden" />
                 </div>
 
             }
             else
             {
-        <div class="form-group" id="item">
-            <label asp-for="itemItemNumber" class="control-label">料号</label>
-            @if (stockhave)
-            {
-                <input id="target" value="@stock.item.ItemName" class="form-control" readonly="readonly" />
-                <input asp-for="itemItemNumber" value="@itemnumber" class="form-control" hidden="hidden" />
-            }
-            else
-            {
-                <input type="text" placeholder="查询料号" class="form-control" use2="item" id="itemtarget" onkeyup="Squery(this,'Itemselectd')" onkeydown="if(event.keyCode==13){return false;}" />
-                <select asp-for="itemItemNumber" id="asset" class="form-control" asp-items="ViewBag.itemItemNumber" hidden="hidden"></select>
+                <div class="form-group" id="item">
+                    <label asp-for="itemItemNumber" class="control-label">料号</label>
+                    @if (stockhave)
+                    {
+                        <input id="target" value="@stock.item.ItemName" class="form-control" readonly="readonly" />
+                        <input asp-for="itemItemNumber" value="@itemnumber" class="form-control" hidden="hidden" />
+                    }
+                    else
+                    {
+                        <input type="text" placeholder="查询料号" class="form-control" use2="item" id="itemtarget" onkeyup="Squery(this,'Itemselectd')" onkeydown="if(event.keyCode==13){return false;}" />
+                        <select asp-for="itemItemNumber" id="asset" class="form-control" asp-items="ViewBag.itemItemNumber" hidden="hidden"></select>
 
-            }
-        </div>
+                    }
+                </div>
 
             }
             <br /> <br /> <br />
@@ -222,9 +225,11 @@
 
 
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="按回车键下单" class="btn btn-primary" />
             </div>
+
         </form>
+
     </div>
     <div>
         <div>
@@ -236,6 +241,91 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+
+<!-- Vue 测试区 -->
+
+<div id="app" class="col-md-12 text-danger" style="height:40px;z-index:2;position: relative;">
+    <div class="form-group">
+        <input type="text" placeholder="查询目标（可以是用户或者是物料。。。）" class="form-control " @@keyup="enter" />
+        <ul id="showarea" class="list-group col-md-4">
+            <li v-for="button in buttons" class="btn btn-info form-control" test="{{button}}" @@click="target" > {{button}}</li>
+
+        </ul>
+    </div>
+
+
+
+</div>
+
+
+
+
+<script>
+    function initapp() {
+        display = false;
+        result = [];
+    }
+    var result = [];
+    function query(use2, str) {
+        $.ajax({
+            type: "get",
+            data: { usefor: use2, str: str },
+            url: "/orders/Query",
+            success: function (d) {
+                for (var item in d) {
+                    result.push(d[item].itemNumber+'-'+d[item].itemName+'-'+d[item].model)
+                }
+            }
+        })
+    }
+    var display = true;
+    function btnclick(e) {
+        initapp()
+    }
+    var app = new Vue({
+        el: '#app',
+        data: {
+
+            show: display,
+            buttons: result
+        },
+        mounted: function () {
+            var _this = this;
+            //setInterval函数是创建一个间歇性计时器，第一个参数是要执行的方法，第二个参数是以毫秒显示的时间
+            //那么就会间歇性执行第一个参数里的方法
+            this.timer = setInterval(function () {
+                //这里修改了函数里的date属性，由于tmd是双向实时绑定，页面上就会在div里实时的更新时间，碉堡了
+                //   _this.date = new Date()
+                _this.show = display;
+                _this.buttons = result;
+            }, 50)
+        },
+        beforeDestroy: function () {
+            if (this.timer) {
+                clearInterval(this.timer);
+            }
+        },
+        methods: {
+            enter: function (e) {
+                display = true;
+                result.length = 0
+                //取该控件的值
+                var str = e.currentTarget.value;
+                query('item', str)
+                if (e.keyCode == 13) {
+                    return false
+                }
+            },
+            target: function (e) {
+                initapp()
+                var Item = e.currentTarget.innerHTML
+
+
+               
+            }
+        }
+    })
+</script>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

@@ -35,7 +35,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var item in Model.Where(c=>c.CurrentQuantity!=0))
         {
         <tr>
             <td>
