@@ -4,15 +4,51 @@
 
 
 
-<div id="app">
-    {{book}}
-</div>
 <script src="https://unpkg.com/vue/dist/vue.min.js"></script>
+
+<div id="app">
+    <p v-if="show">显示这段</p>
+</div>
 <script>
-    var app = new vue({
+    var app = new Vue({
         el: '#app',
         data: {
-            book: 'asdf'
+            show:true
+        }
+    })
+</script>
+
+
+<div id="app1">
+    {{date}}
+    {{number/10}}
+    {{isOK?'确定':'取消'}}
+    {{text.split(',').reverse().join(',')}}
+</div>
+
+
+<script>
+    var app = new Vue({
+        el: '#app1',
+        data: {
+            date:new Date(),
+            number: 100,
+            isOK: false,
+            text:"123,456"
+        },
+        mounted: function () {
+            var _this = this;
+            //setInterval函数是创建一个间歇性计时器，第一个参数是要执行的方法，第二个参数是以毫秒显示的时间
+            //那么就会间歇性执行第一个参数里的方法
+            this.timer = setInterval(function () {
+                //这里修改了函数里的date属性，由于tmd是双向实时绑定，页面上就会在div里实时的更新时间，碉堡了
+                _this.date=new Date()
+            },1000)
+        },
+        beforeDestroy: function () {
+            if (this.timer) {
+                clearInterval(this.timer);
+            }
         }
     })
 </script>
